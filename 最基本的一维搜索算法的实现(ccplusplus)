@@ -1,0 +1,108 @@
+/*
+ * @author: MENG ZHEN CHUAN
+ * @date: do not edit
+ * @description: HADOOP Project
+ * @method: note
+ */
+#include <iostream>
+#include <algorithm>
+using std::swap;
+
+
+
+class OneDemensionSearch{
+    private:
+        static double x0;/**高点*/
+        static double x1;/**低点*/
+        static double x2;/**高点*/
+        static int h;/**前进或者后退的步数*/
+        static double oldFuncationValue;/**之前的函数值*/
+        static double newFuncationValue;/**新的函数值*/
+        static size_t k;/**找到最小值区间的次数*/
+    public:
+        OneDemensionSearch(/* args */);
+        ~OneDemensionSearch();
+    public:
+        static double funcation(double x);
+        static double findMinValueInterval();
+    public:
+        static void getMemberInfo(){
+            std::cout<<"初始化的x0  "<<x0<<std::endl;
+            std::cout<<"初始化的步长  "<<h<<std::endl;
+        }
+        static void getIntervel(){
+            std::cout<<"最小值所在的区间为 "<<std::endl;
+            if(x1<x2){
+                std::cout<<"("<<x1<<","<<x2<<")";
+            }
+            else{
+                std::cout<<"("<<x2<<","<<x1<<")";
+            }
+            
+        }
+    
+};
+
+/**Outside class initialization of static variables, 
+ * private can be called directly from the class name when initialized*/
+double OneDemensionSearch::x0=1;
+double OneDemensionSearch::x1=0;
+double OneDemensionSearch::x2=0;
+int    OneDemensionSearch::h=8;
+size_t OneDemensionSearch::k=0;
+double OneDemensionSearch::oldFuncationValue=OneDemensionSearch::funcation(x0);
+double OneDemensionSearch::newFuncationValue=0;
+
+
+
+OneDemensionSearch::OneDemensionSearch(/* args */){
+}
+
+OneDemensionSearch::~OneDemensionSearch(){
+}
+
+double OneDemensionSearch::funcation(double x){
+    return (x-3)*(x-6);
+}
+
+/**
+  * If the input function does not have a minimum value, 
+  * it will cause an infinite loop, which is a disaster. 
+  * Make sure the input function has a minimum value
+*/
+double OneDemensionSearch::findMinValueInterval(){
+    double xStar=0;
+    while (true){
+        ++k;/*往前或者往后走一步*/
+        xStar=x0+h;
+        newFuncationValue=funcation(xStar);
+        if(newFuncationValue<oldFuncationValue){
+            x1=x0;/**将舍弃的高点记录*/
+            x0=xStar;/**更新x0*/
+           // h=1.5*h;/**更新步长*/ 
+            oldFuncationValue=newFuncationValue;
+        }
+        else{
+            /**第一步反向，更新其方向*/
+            if(k==1){
+                x1=xStar;
+                h=-h;
+            }
+            /**在一高一低之后找到第二个高点*/
+           if(k>=2){
+            /**终止条件，找到第二个高的点,其区间为（x0,x2）或者（x2,x0）*/
+                x2=xStar;
+                break;
+            }
+        }
+       
+    }
+}
+
+
+int main(int argc, char const *argv[]){
+    OneDemensionSearch::getMemberInfo();
+    OneDemensionSearch::findMinValueInterval();
+    OneDemensionSearch::getIntervel();
+    return 0;
+}
